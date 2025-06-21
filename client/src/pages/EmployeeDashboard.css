@@ -1,0 +1,169 @@
+:root {
+  --primary: #007bff;
+  --white: #ffffff;
+  --gray: #f8f9fa;
+  --text-dark: #333333;
+  --text-muted: #6c757d;
+  --danger: #d82638;
+  --danger-dark: #eb495a;
+  --border: #e0e0e0;
+  --radius: 12px;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --font: 'Segoe UI', 'Inter', sans-serif;
+}
+
+body, html, #root {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font);
+  background: var(--gray);
+  color: var(--text-dark);
+  height: 100%;
+}
+
+.employee-dashboard {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-header {
+  height: 70px;
+  background: linear-gradient(90deg, var(--white) 0%, #f1f5f9 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 32px;
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  flex-shrink: 0;
+  border-radius: 0 0 var(--radius) var(--radius);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.dashboard-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.logout-button {
+  background-color: var(--danger);
+  border: none;
+  color: var(--white);
+  padding: 10px 20px;
+  font-weight: 500;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.logout-button:hover {
+  background-color: var(--danger-dark);
+  box-shadow: var(--shadow-heavy);
+}
+.logout-button:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+.logout-button:active {
+  background-color: var(--danger-dark);
+  transform: scale(0.95);
+}
+
+.dashboard-content {
+  flex: 1;
+  padding: 32px;
+  box-sizing: border-box;
+}
+
+.employee-card {
+  max-width: 800px;
+  margin: 0 auto;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.employee-card:hover {
+  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+  transform: translateY(-4px);
+}
+
+.profile-section {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.profile-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 3px solid var(--primary);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.profile-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 8px var(--primary);
+}
+
+.profile-info h3 {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.profile-info p {
+  margin: 2px 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.emp-desc .ant-descriptions-item-label {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.emp-desc .ant-descriptions-item-content {
+  color: var(--text-dark);
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .employee-card {
+    padding: 16px;
+    margin: 16px;
+  }
+  .profile-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+/* Loading Shimmer Effect (optional) */
+@keyframes shimmer {
+  0% {
+    background-position: -500px 0;
+  }
+  100% {
+    background-position: 500px 0;
+  }
+}
+
+.loading-placeholder {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 1000px 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius);
+  height: 20px;
+  margin-bottom: 10px;
+}

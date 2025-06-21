@@ -1,0 +1,11 @@
+
+:root {
+  --bg-gradient: linear-gradient(135deg, #1e3c72, #2a5298, #38b9a4);
+  --card-bg: rgba(255,255,255,0.08);
+  --card-border: rgba(255,255,255,0.15);
+  --accent: #00bcd4;
+  --accent-dark: #0097a7;
+  --text-light: #fff;
+  --shadow: 0 4px 20px rgba(0,0,0,0.2);
+  --blur: blur(10px);
+}
