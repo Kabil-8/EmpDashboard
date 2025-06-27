@@ -7,29 +7,24 @@ const User = require('../models/User');
 router.get('/admin/stats', async (req, res) => {
   try {
     const users = await User.find({ role: { $ne: 'admin' } });
-
     const total = users.length;
     const male = users.filter(u => u.gender === 'male').length;
     const female = users.filter(u => u.gender === 'female').length;
     const remote = users.filter(u => u.mode === 'remote').length;
     const onsite = users.filter(u => u.mode === 'onsite').length;
-
     const departments = {};
     users.forEach(u => {
       departments[u.department] = (departments[u.department] || 0) + 1;
     });
-
     const topEmployees = users
       .filter(u => typeof u.score === 'number')
       .sort((a, b) => b.score - a.score)
       .slice(0, 10)
       .map(u => ({ name: u.name, score: u.score }));
-
     const salaryTrend = users.map(u => ({
       name: u.name,
       salary: u.salary || 0
     }));
-
     res.json({
       total, male, female, remote, onsite,
       departments, topEmployees, salaryTrend
@@ -39,8 +34,6 @@ router.get('/admin/stats', async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch stats' });
   }
 });
-
-
 // ✅ CREATE employee
 router.post('/employees', async (req, res) => {
   try {
@@ -52,7 +45,6 @@ router.post('/employees', async (req, res) => {
     res.status(500).json({ message: 'Failed to create employee' });
   }
 });
-
 // ✅ READ all employees (admin only)
 // READ all employees (non-admins only)
 router.get('/employees', async (req, res) => {
@@ -63,8 +55,6 @@ router.get('/employees', async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch employees' });
   }
 });
-
-
 // ✅ Get logged-in employee’s own profile
 router.get('/employees/:id/profile', async (req, res) => {
   try {
@@ -75,7 +65,6 @@ router.get('/employees/:id/profile', async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch employee profile' });
   }
 });
-
 // ✅ UPDATE employee
 router.put('/employees/:id', async (req, res) => {
   try {
@@ -86,7 +75,6 @@ router.put('/employees/:id', async (req, res) => {
     res.status(500).json({ message: 'Update failed' });
   }
 });
-
 // ✅ DELETE employee
 router.delete('/employees/:id', async (req, res) => {
   try {
@@ -97,5 +85,14 @@ router.delete('/employees/:id', async (req, res) => {
     res.status(500).json({ message: 'Delete failed' });
   }
 });
-
+// ✅ Super Admin - Get ALL Users (Admin + Employees)
+router.get('/superadmin/all-users', async (req, res) => {
+  try {
+    const users = await User.find().select('-password'); // Exclude passwords
+    res.json(users);
+  } catch (err) {
+    console.error('Failed to fetch all users:', err);
+    res.status(500).json({ message: 'Failed to fetch all users' });
+  }
+});
 module.exports = router;

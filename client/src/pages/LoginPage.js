@@ -1,81 +1,116 @@
-import React, { useState } from 'react';
-import { Card, Form, Input, Button, message } from 'antd';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios'; // ✅ import axios
-import skyBackground from '../assets/sky.png'; // ✅ relative path
+import React, { useState, useEffect } from 'react';
 import './LoginPage.css';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import logo from '../assets/logo.jpeg';
 
 export default function LoginPage() {
-  const [role, setRole] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [role, setRole] = useState('employee');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [welcomeMessage, setWelcomeMessage] = useState('');
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
   const navigate = useNavigate();
 
-  const goBack = () => setRole(null);
+useEffect(() => {
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  setTheme(savedTheme);
+}, []);
 
-  const onFinish = async (values) => {
-    setLoading(true);
+const toggleTheme = () => {
+  const newTheme = theme === 'dark' ? 'light' : 'dark';
+  setTheme(newTheme);
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+};
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
       const res = await axios.post('http://localhost:5000/api/auth/login', {
-        ...values,
-        role, // ✅ include role in request body
+        email,
+        password,
+        role,
       });
+
       const { token, user } = res.data;
+      if (user.role !== role) {
+        alert(`You are not authorized to login as ${role}`);
+        return;
+      }
+
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
-      message.success(`Welcome ${user.name}`);
-      navigate(user.role === 'admin' ? '/admin' : '/employee');
-    } catch (err) {
-      message.error('Login failed. Please try again.');
-    }
-    setLoading(false);
-  };
+      setWelcomeMessage(`Welcome, ${user.name}!`);
 
-  const backgroundStyle = {
-    backgroundImage: `url(${skyBackground})`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    height: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    paddingTop: '60px',
+      setTimeout(() => {
+        navigate(`/${role}`);
+      }, 1500);
+    } catch (err) {
+      alert('Login failed. Check credentials.');
+    }
   };
 
   return (
-    <div style={backgroundStyle}>
-      <div className="login-header">
-        <img src="/logo.jpeg" alt="GenHub Logo" className="genhub-logo" />
-        <h1 className="portal-title">GenHub Portal</h1>
-        <p className="portal-subtext">Choose your role to sign in</p>
-      </div>
+    <div className="login-container">
+      <button className="theme-toggle" onClick={toggleTheme}>
+        {theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode'}
+      </button>
 
-      {!role ? (
-        <div className="role-cards-center">
-          <div className="role-card" onClick={() => setRole('admin')}>
-            👑 <span>Admin</span>
-          </div>
-          <div className="role-card" onClick={() => setRole('employee')}>
-            👔 <span>Employee</span>
-          </div>
+      {welcomeMessage && (
+        <div className="welcome-popup">
+          <p>{welcomeMessage}</p>
         </div>
-      ) : (
-        <Card className="login-card" title={`Login as ${role}`}>
-          <Form onFinish={onFinish} layout="vertical">
-            <Form.Item name="email" label="Email" rules={[{ required: true }]}>
-              <Input placeholder="e.g. user@example.com" />
-            </Form.Item>
-            <Form.Item name="password" label="Password" rules={[{ required: true }]}>
-              <Input.Password placeholder="Your password" />
-            </Form.Item>
-            <Form.Item>
-              <Button type="primary" htmlType="submit" loading={loading}>
-                Login
-              </Button>
-            </Form.Item>
-            <Button type="link" onClick={goBack}>← Back</Button>
-          </Form>
-        </Card>
       )}
+
+      <div className="login-card">
+        <div className="left-panel">
+          <h2 className="slide-up delay-1">GenHub</h2>
+          <p className="login-title slide-up delay-2">Login to your respective portal</p>
+
+          <div className="role-buttons slide-up delay-3">
+            {['employee', 'admin'].map((r) => (
+              <button
+                key={r}
+                type="button"
+                className={role === r ? 'active' : ''}
+                onClick={() => setRole(r)}
+              >
+                {r.charAt(0).toUpperCase() + r.slice(1)}
+              </button>
+            ))}
+          </div>
+
+          <form onSubmit={handleSubmit}>
+            <input
+              className="slide-up delay-4"
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <input
+              className="slide-up delay-5"
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button type="submit" className="login-btn slide-up delay-6">
+              Sign In as {role.charAt(0).toUpperCase() + role.slice(1)}
+            </button>
+          </form>
+
+          <p className="footer-text slide-up delay-7">© 2025 GenHub. All Rights Reserved.</p>
+        </div>
+
+        <div className="right-panel">
+          <img src={logo} alt="Rotating Logo" className="rotating-logo" />
+        </div>
+      </div>
     </div>
   );
 }
